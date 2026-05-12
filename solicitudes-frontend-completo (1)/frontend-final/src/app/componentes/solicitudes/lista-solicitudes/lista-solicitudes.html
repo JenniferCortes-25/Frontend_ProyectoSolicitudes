@@ -1,0 +1,61 @@
+<div class="encabezado">
+  <h2>📋 Solicitudes</h2>
+  <a routerLink="/solicitudes/nueva" class="btn-nueva">+ Nueva Solicitud</a>
+</div>
+
+<div class="filtros">
+  <label>Filtrar por estado:</label>
+  <select [value]="filtroEstado()" (change)="cambiarFiltro($any($event.target).value)">
+    <option value="">Todos</option>
+    @for (e of estados; track e) {
+      <option [value]="e">{{ e }}</option>
+    }
+  </select>
+</div>
+
+@if (cargando()) {
+  <div class="cargando">⏳ Cargando solicitudes…</div>
+}
+
+@if (error()) {
+  <div class="alerta-error">⚠️ {{ error() }}</div>
+}
+
+@if (!cargando() && !error()) {
+  @if (solicitudes().length === 0) {
+    <div class="vacio">No hay solicitudes registradas aún.</div>
+  } @else {
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Tipo</th>
+            <th>Prioridad</th>
+            <th>Solicitante</th>
+            <th>Fecha</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of solicitudes(); track s.id) {
+            <tr>
+              <td class="desc">{{ s.descripcionBreve }}</td>
+              <td>
+                <span class="badge" [style.background]="colorEstado(s.estado)">
+                  {{ s.estado }}
+                </span>
+              </td>
+              <td>{{ s.tipo ?? '—' }}</td>
+              <td>{{ s.nivelPrioridad ?? '—' }}</td>
+              <td>{{ s.solicitanteNombre ?? '—' }}</td>
+              <td>{{ s.fechaRegistro | slice:0:10 }}</td>
+              <td><a [routerLink]="['/solicitudes', s.id]" class="btn-ver">Ver</a></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}

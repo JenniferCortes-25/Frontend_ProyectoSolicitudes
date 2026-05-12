@@ -1,0 +1,42 @@
+<div class="form-contenedor">
+  <div class="form-card">
+    <h2>📝 Nueva Solicitud</h2>
+    <p class="subtitulo">Completa el formulario para registrar tu solicitud académica.</p>
+
+    @if (error()) {
+      <div class="alerta-error">⚠️ {{ error() }}</div>
+    }
+
+    <div class="campo">
+      <label>Identificación del solicitante *</label>
+      <input type="text" [value]="solicitanteId()"
+             (input)="solicitanteId.set($any($event.target).value)"
+             placeholder="Ej. E-2024001" />
+    </div>
+
+    <div class="campo">
+      <label>Descripción de la solicitud * <span class="contador">({{ descripcion().length }}/1000)</span></label>
+      <textarea rows="5" [value]="descripcion()"
+                (input)="descripcion.set($any($event.target).value)"
+                placeholder="Describe detalladamente tu solicitud (mínimo 10 caracteres)…"
+                maxlength="1000"></textarea>
+    </div>
+
+    <div class="campo">
+      <label>Canal de origen *</label>
+      <select [value]="canalOrigen()"
+              (change)="canalOrigen.set($any($event.target).value)">
+        @for (canal of canales; track canal) {
+          <option [value]="canal">{{ canal.replace('_', ' ') }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="acciones">
+      <a routerLink="/solicitudes" class="btn-cancelar">Cancelar</a>
+      <button class="btn-enviar" (click)="enviar()" [disabled]="cargando()">
+        @if (cargando()) { Enviando… } @else { Enviar Solicitud }
+      </button>
+    </div>
+  </div>
+</div>

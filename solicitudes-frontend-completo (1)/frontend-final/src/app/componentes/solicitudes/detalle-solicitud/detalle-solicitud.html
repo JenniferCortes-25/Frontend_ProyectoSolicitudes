@@ -1,0 +1,260 @@
+<a routerLink="/solicitudes" class="volver">← Volver a la lista</a>
+
+@if (cargando()) {
+  <div class="cargando">⏳ Cargando solicitud…</div>
+}
+
+@if (error()) {
+  <div class="alerta-error">⚠️ {{ error() }}</div>
+}
+
+@if (mensaje()) {
+  <div class="alerta-exito">{{ mensaje() }}</div>
+}
+
+@if (solicitud(); as s) {
+
+  <div class="detalle-card">
+    <div class="detalle-header">
+      <h2>📄 Detalle de Solicitud</h2>
+      <span class="badge" [style.background]="colorEstado(s.estado)">{{ s.estado }}</span>
+    </div>
+
+    <div class="grid-info">
+      <div class="info-grupo full">
+        <label>Descripción</label>
+        <p>{{ s.descripcion }}</p>
+      </div>
+      <div class="info-grupo">
+        <label>Canal de origen</label>
+        <p>{{ s.canalOrigen }}</p>
+      </div>
+      <div class="info-grupo">
+        <label>Tipo</label>
+        <p>{{ s.tipo ?? '—' }}</p>
+      </div>
+      <div class="info-grupo">
+        <label>Prioridad</label>
+        <p>{{ s.nivelPrioridad ?? '—' }}</p>
+      </div>
+      @if (s.justificacionPrioridad) {
+        <div class="info-grupo full">
+          <label>Justificación de prioridad</label>
+          <p>{{ s.justificacionPrioridad }}</p>
+        </div>
+      }
+      <div class="info-grupo">
+        <label>Solicitante (ID)</label>
+        <p>{{ s.solicitanteId }}</p>
+      </div>
+      <div class="info-grupo">
+        <label>Responsable</label>
+        <p>{{ s.responsableNombre ?? 'Sin asignar' }}</p>
+      </div>
+      <div class="info-grupo">
+        <label>Fecha de registro</label>
+        <p>{{ s.fechaRegistro | slice:0:16 }}</p>
+      </div>
+      <div class="info-grupo">
+        <label>Entradas en historial</label>
+        <p>{{ s.totalEntradaHistorial }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 1. CLASIFICAR (estado: REGISTRADA) ─────────────────────────── -->
+  @if (s.estado === 'REGISTRADA') {
+    <div class="accion-card">
+      <h3>🗂️ Clasificar solicitud</h3>
+      <p class="accion-desc">
+        Asigna tipo, nivel de prioridad y justificación.
+        Solo el coordinador puede realizar esta acción.
+      </p>
+
+      <div class="campo">
+        <label>Tipo de solicitud</label>
+        <select (change)="fTipo.set($any($event.target).value)">
+          @for (t of tipos; track t) {
+            <option [value]="t" [selected]="fTipo() === t">{{ t.replaceAll('_', ' ') }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="campo">
+        <label>Nivel de prioridad</label>
+        <select (change)="fNivel.set($any($event.target).value)">
+          @for (n of niveles; track n) {
+            <option [value]="n" [selected]="fNivel() === n">{{ n }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="campo">
+        <label>Justificación de prioridad * <span class="hint">(mín. 5 caracteres)</span></label>
+        <textarea rows="3"
+                  [value]="fJustificacion()"
+                  (input)="fJustificacion.set($any($event.target).value)"
+                  placeholder="Explica por qué se asigna ese nivel de prioridad…">
+        </textarea>
+      </div>
+
+      <div class="campo">
+        <label>Identificación del coordinador * <span class="hint">(ej: C-001)</span></label>
+        <input type="text"
+               [value]="fCoordinadorId()"
+               (input)="fCoordinadorId.set($any($event.target).value)"
+               placeholder="C-001" />
+      </div>
+
+      <button class="btn-accion btn-clasificar"
+              (click)="clasificar()"
+              [disabled]="accionando()">
+        @if (accionando()) { Procesando… } @else { Clasificar }
+      </button>
+    </div>
+  }
+
+  <!-- ── 2. ASIGNAR RESPONSABLE (estado: CLASIFICADA) ───────────────── -->
+  @if (s.estado === 'CLASIFICADA') {
+    <div class="accion-card">
+      <h3>👤 Asignar responsable</h3>
+      <p class="accion-desc">
+        Asigna un usuario activo como responsable de atender esta solicitud.
+        Solo el coordinador puede realizarlo.
+      </p>
+
+      <div class="campo">
+        <label>Identificación del responsable * <span class="hint">(ej: D-001, A-001)</span></label>
+        <input type="text"
+               [value]="fResponsableId()"
+               (input)="fResponsableId.set($any($event.target).value)"
+               placeholder="D-001" />
+      </div>
+
+      <div class="campo">
+        <label>Identificación del coordinador * <span class="hint">(ej: C-001)</span></label>
+        <input type="text"
+               [value]="fCoordAsignarId()"
+               (input)="fCoordAsignarId.set($any($event.target).value)"
+               placeholder="C-001" />
+      </div>
+
+      <button class="btn-accion btn-asignar"
+              (click)="asignarResponsable()"
+              [disabled]="accionando()">
+        @if (accionando()) { Procesando… } @else { Asignar responsable }
+      </button>
+    </div>
+
+    @if (s.responsableId) {
+      <div class="accion-card">
+        <h3>▶️ Iniciar atención</h3>
+        <p class="accion-desc">
+          Cambia el estado a EN ATENCIÓN. La solicitud ya tiene responsable asignado.
+        </p>
+
+        <div class="campo">
+          <label>Identificación del coordinador * <span class="hint">(ej: C-001)</span></label>
+          <input type="text"
+                 [value]="fCoordIniciarId()"
+                 (input)="fCoordIniciarId.set($any($event.target).value)"
+                 placeholder="C-001" />
+        </div>
+
+        <button class="btn-accion btn-iniciar"
+                (click)="iniciarAtencion()"
+                [disabled]="accionando()">
+          @if (accionando()) { Procesando… } @else { Iniciar atención }
+        </button>
+      </div>
+    }
+  }
+
+  <!-- ── 3. ATENDER (estado: EN_ATENCION) ──────────────────────────── -->
+  @if (s.estado === 'EN_ATENCION') {
+    <div class="accion-card">
+      <h3>✍️ Marcar como atendida</h3>
+      <p class="accion-desc">
+        Registra la observación de atención.
+        Solo el responsable asignado puede ejecutar esta acción.
+      </p>
+
+      <div class="campo">
+        <label>Observación * <span class="contador">({{ fObservacionAtender().length }}/500)</span></label>
+        <textarea rows="4"
+                  [value]="fObservacionAtender()"
+                  (input)="fObservacionAtender.set($any($event.target).value)"
+                  placeholder="Describe cómo se atendió la solicitud (mín. 10 caracteres)…"
+                  maxlength="500">
+        </textarea>
+      </div>
+
+      <div class="campo">
+        <label>Identificación del responsable asignado * <span class="hint">(ej: D-001)</span></label>
+        <input type="text"
+               [value]="fResponsableAtenderId()"
+               (input)="fResponsableAtenderId.set($any($event.target).value)"
+               placeholder="D-001" />
+      </div>
+
+      <button class="btn-accion btn-atender"
+              (click)="atender()"
+              [disabled]="accionando()">
+        @if (accionando()) { Procesando… } @else { Marcar como atendida }
+      </button>
+    </div>
+  }
+
+  <!-- ── 4. CERRAR (estado: ATENDIDA) ──────────────────────────────── -->
+  @if (s.estado === 'ATENDIDA') {
+    <div class="accion-card">
+      <h3>🔒 Cerrar solicitud</h3>
+      <p class="accion-desc">
+        Cierra formalmente la solicitud.
+        Solo el coordinador puede realizarlo.
+      </p>
+
+      <div class="campo">
+        <label>Observación de cierre * <span class="contador">({{ fObservacionCerrar().length }}/500)</span></label>
+        <textarea rows="4"
+                  [value]="fObservacionCerrar()"
+                  (input)="fObservacionCerrar.set($any($event.target).value)"
+                  placeholder="Observación formal de cierre (mín. 20 caracteres)…"
+                  maxlength="500">
+        </textarea>
+      </div>
+
+      <div class="campo">
+        <label>Identificación del coordinador * <span class="hint">(ej: C-001)</span></label>
+        <input type="text"
+               [value]="fCoordCerrarId()"
+               (input)="fCoordCerrarId.set($any($event.target).value)"
+               placeholder="C-001" />
+      </div>
+
+      <button class="btn-accion btn-cerrar"
+              (click)="cerrar()"
+              [disabled]="accionando()">
+        @if (accionando()) { Procesando… } @else { Cerrar solicitud }
+      </button>
+    </div>
+  }
+
+  <!-- ── HISTORIAL ──────────────────────────────────────────────────── -->
+  @if (historial().length > 0) {
+    <div class="historial-card">
+      <h3>🕓 Historial de eventos</h3>
+      <ul class="historial-lista">
+        @for (h of historial(); track $index) {
+          <li class="historial-item">
+            <span class="historial-punto">●</span>
+            <div>
+              <p class="historial-desc">{{ h.descripcion }}</p>
+              <span class="historial-fecha">{{ h.fecha | slice:0:16 }}</span>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+}

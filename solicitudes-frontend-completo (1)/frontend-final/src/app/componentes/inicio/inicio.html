@@ -1,0 +1,33 @@
+<section class="hero">
+  <div class="hero-icono">🎓</div>
+  <h1>{{ bienvenida() }}</h1>
+  <p class="subtitulo">{{ subtitulo() }}</p>
+
+  <div class="acciones">
+    @if (auth.estaAutenticado()) {
+      <a routerLink="/solicitudes" class="btn btn-primario">Ver Solicitudes</a>
+      <a routerLink="/solicitudes/nueva" class="btn btn-secundario">Nueva Solicitud</a>
+    } @else {
+      <a routerLink="/login" class="btn btn-primario">Iniciar Sesión</a>
+      <a routerLink="/registro" class="btn btn-secundario">Registrarse</a>
+    }
+  </div>
+</section>
+
+<section class="tarjetas-info">
+  <div class="tarjeta">
+    <span class="icono">📋</span>
+    <h3>Registra tu Solicitud</h3>
+    <p>Crea solicitudes de homologación, becas, certificados y más en minutos.</p>
+  </div>
+  <div class="tarjeta">
+    <span class="icono">🔍</span>
+    <h3>Consulta el Estado</h3>
+    <p>Sigue en tiempo real el avance de tus solicitudes.</p>
+  </div>
+  <div class="tarjeta">
+    <span class="icono">✅</span>
+    <h3>Gestión Eficiente</h3>
+    <p>Coordinadores y administrativos gestionan todo desde un solo lugar.</p>
+  </div>
+</section>

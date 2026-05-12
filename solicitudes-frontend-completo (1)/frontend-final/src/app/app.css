@@ -1,0 +1,22 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f5f7fa;
+  color: #2d3748;
+}
+
+.contenido-principal {
+  min-height: calc(100vh - 130px);
+  padding: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.pie-pagina {
+  background: #2d3748;
+  color: #a0aec0;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.85rem;
+}

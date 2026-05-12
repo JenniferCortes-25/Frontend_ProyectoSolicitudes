@@ -1,0 +1,111 @@
+<div class="page-header">
+  <h2>👥 Usuarios del Sistema</h2>
+  <button class="btn-crear" (click)="toggleFormCrear()">
+    @if (mostrarFormCrear()) { ✕ Cancelar } @else { + Crear usuario }
+  </button>
+</div>
+
+@if (error()) {
+  <div class="alerta-error">⚠️ {{ error() }}</div>
+}
+
+@if (mensaje()) {
+  <div class="alerta-exito">{{ mensaje() }}</div>
+}
+
+<!-- ── Formulario crear usuario ───────────────────────────────────────── -->
+@if (mostrarFormCrear()) {
+  <div class="form-card">
+    <h3>Nuevo usuario</h3>
+    <p class="form-desc">El usuario podrá iniciar sesión con la contraseña por defecto: <strong>Password123</strong></p>
+
+    <div class="form-grid">
+      <div class="campo">
+        <label>Identificación *</label>
+        <input type="text"
+               [value]="fIdentificacion()"
+               (input)="fIdentificacion.set($any($event.target).value)"
+               placeholder="Ej: E-010" />
+      </div>
+      <div class="campo">
+        <label>Nombre completo *</label>
+        <input type="text"
+               [value]="fNombre()"
+               (input)="fNombre.set($any($event.target).value)"
+               placeholder="Nombre y apellido" />
+      </div>
+      <div class="campo">
+        <label>Email institucional *</label>
+        <input type="email"
+               [value]="fEmail()"
+               (input)="fEmail.set($any($event.target).value)"
+               placeholder="usuario@uniquindio.edu.co" />
+      </div>
+      <div class="campo">
+        <label>Tipo de usuario</label>
+        <select (change)="fTipo.set($any($event.target).value)">
+          @for (t of tipos; track t) {
+            <option [value]="t" [selected]="fTipo() === t">{{ t }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-guardar" (click)="crearUsuario()" [disabled]="creando()">
+      @if (creando()) { Creando… } @else { Guardar usuario }
+    </button>
+  </div>
+}
+
+<!-- ── Lista de usuarios ──────────────────────────────────────────────── -->
+@if (cargando()) {
+  <div class="cargando">⏳ Cargando usuarios…</div>
+}
+
+@if (!cargando() && usuarios().length === 0) {
+  <div class="vacio">No hay usuarios registrados.</div>
+}
+
+<div class="tabla-wrapper">
+  @if (usuarios().length > 0) {
+    <table class="tabla">
+      <thead>
+      <tr>
+        <th>Identificación</th>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Tipo</th>
+        <th>Estado</th>
+        <th>Acción</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (u of usuarios(); track u.id) {
+          <tr>
+            <td>{{ u.identificacion }}</td>
+            <td>{{ u.nombre }}</td>
+            <td>{{ u.email }}</td>
+            <td>
+              <span class="badge-tipo" [style.background]="colorTipo(u.tipoUsuario)">
+                {{ u.tipoUsuario }}
+              </span>
+            </td>
+            <td>
+              <span class="badge-estado" [class.activo]="u.estadoUsuario === 'ACTIVO'">
+                {{ u.estadoUsuario }}
+              </span>
+            </td>
+            <td>
+              <button class="btn-estado"
+                      [class.btn-desactivar]="u.estadoUsuario === 'ACTIVO'"
+                      [class.btn-activar]="u.estadoUsuario === 'INACTIVO'"
+                      (click)="cambiarEstado(u)">
+                {{ u.estadoUsuario === 'ACTIVO' ? 'Desactivar' : 'Activar' }}
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

@@ -1,0 +1,24 @@
+<nav class="navbar">
+  <a routerLink="/" class="navbar-brand">
+    <span class="brand-icon">📋</span>
+    <span>Solicitudes UniQ</span>
+  </a>
+
+  @if (auth.estaAutenticado()) {
+    <ul class="navbar-links">
+      <li><a routerLink="/">Inicio</a></li>
+      <li><a routerLink="/solicitudes">Solicitudes</a></li>
+      <li><a routerLink="/solicitudes/nueva">Nueva Solicitud</a></li>
+      <li><a routerLink="/usuarios">Usuarios</a></li>
+    </ul>
+    <div class="navbar-actions">
+      <a routerLink="/cambiar-password" class="btn-password">🔑 Mi contraseña</a>
+      <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+    </div>
+  } @else {
+    <ul class="navbar-links">
+      <li><a routerLink="/">Inicio</a></li>
+    </ul>
+    <a routerLink="/login" class="btn-login">Iniciar sesión</a>
+  }
+</nav>

@@ -1,0 +1,47 @@
+<div class="registro-contenedor">
+  <div class="registro-card">
+    <div class="registro-icono">📝</div>
+    <h2>Crear Cuenta</h2>
+    <p class="subtitulo">Únete al Sistema de Solicitudes UniQ</p>
+
+    @if (error()) {
+      <div class="alerta-error">{{ error() }}</div>
+    }
+    @if (exito()) {
+      <div class="alerta-exito">{{ exito() }}</div>
+    }
+
+    <div class="campo">
+      <label>Identificación</label>
+      <input type="text" [value]="identificacion()"
+             (input)="identificacion.set($any($event.target).value)"
+             placeholder="Ej. E-2024001" />
+    </div>
+    <div class="campo">
+      <label>Nombre completo</label>
+      <input type="text" [value]="nombre()"
+             (input)="nombre.set($any($event.target).value)"
+             placeholder="Tu nombre completo" />
+    </div>
+    <div class="campo">
+      <label>Email institucional</label>
+      <input type="email" [value]="email()"
+             (input)="email.set($any($event.target).value)"
+             placeholder="nombre@uniquindio.edu.co" />
+    </div>
+    <div class="campo">
+      <label>Tipo de usuario</label>
+      <select [value]="tipoUsuario()"
+              (change)="tipoUsuario.set($any($event.target).value)">
+        @for (tipo of tipos; track tipo) {
+          <option [value]="tipo">{{ tipo }}</option>
+        }
+      </select>
+    </div>
+
+    <button class="btn-registrar" (click)="registrar()" [disabled]="cargando()">
+      @if (cargando()) { Registrando… } @else { Crear cuenta }
+    </button>
+    <p class="pie">¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+  </div>
+</div>
