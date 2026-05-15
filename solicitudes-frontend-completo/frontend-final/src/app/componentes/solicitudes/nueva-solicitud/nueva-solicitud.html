@@ -1,0 +1,66 @@
+<div class="form-contenedor">
+  <div class="form-card">
+    <h2>📝 Nueva Solicitud</h2>
+    <p class="subtitulo">Completa el formulario para registrar tu solicitud académica.</p>
+
+    @if (result()) {
+      <div class="alerta-error">⚠️ {{ result() }}</div>
+    }
+
+    <form [formGroup]="solicitudForm" (ngSubmit)="onSubmit()">
+
+      <!-- Identificación del solicitante -->
+      <div class="campo">
+        <label>Identificación del solicitante *</label>
+        <input
+          type="text"
+          formControlName="solicitanteId"
+          placeholder="Ej. E-2024001"
+        />
+        @if (solicitudForm.get('solicitanteId')?.invalid && solicitudForm.get('solicitanteId')?.touched) {
+          <div class="error">La identificación del solicitante es obligatoria.</div>
+        }
+      </div>
+
+      <!-- Descripción -->
+      <div class="campo">
+        <label>
+          Descripción *
+          <span class="contador">({{ charCount() }}/1000)</span>
+        </label>
+        <textarea
+          rows="5"
+          formControlName="descripcion"
+          placeholder="Describe detalladamente tu solicitud (mínimo 10 caracteres)…"
+          maxlength="1000"
+        ></textarea>
+        @if (solicitudForm.get('descripcion')?.invalid && solicitudForm.get('descripcion')?.touched) {
+          <div class="error">La descripción debe tener entre 10 y 1000 caracteres.</div>
+        }
+      </div>
+
+      <!-- Canal de origen -->
+      <div class="campo">
+        <label>Canal de origen *</label>
+        <select formControlName="canalOrigen">
+          <option value="" disabled>Selecciona un canal…</option>
+          @for (canal of canales; track canal) {
+            <option [value]="canal">{{ canal.replace('_', ' ') }}</option>
+          }
+        </select>
+        @if (solicitudForm.get('canalOrigen')?.invalid && solicitudForm.get('canalOrigen')?.touched) {
+          <div class="error">Selecciona un canal de origen.</div>
+        }
+      </div>
+
+      <!-- Acciones -->
+      <div class="acciones">
+        <a routerLink="/solicitudes" class="btn-cancelar">Cancelar</a>
+        <button class="btn-enviar" type="submit" [disabled]="!canSubmit()">
+          @if (isLoading()) { Enviando… } @else { Enviar Solicitud }
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

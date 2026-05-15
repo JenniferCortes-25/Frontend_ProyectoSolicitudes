@@ -31,3 +31,9 @@ h2 { font-size:1.5rem; color:#2b6cb0; margin-bottom:.25rem; }
 }
 .btn-enviar:hover:not(:disabled) { background:#2c5282; }
 .btn-enviar:disabled { opacity:.6; cursor:not-allowed; }
+
+.error {
+  color: #dc3545;
+  font-size: 0.82rem;
+  margin-top: 4px;
+}
