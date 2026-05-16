@@ -40,9 +40,10 @@ export interface SolicitudDetalleResponse {
 }
 
 export interface EventoHistorialResponse {
-  descripcion: string;
-  fecha: string;
-  usuario: string;
+  fechaHora: string;        // LocalDateTime → string ISO
+  accion: string;           // qué acción ocurrió
+  usuarioResponsable: string; // quién la ejecutó
+  observaciones: string;    // detalle adicional
 }
 
 // ── Requests básicos ──────────────────────────────────────────────────────────

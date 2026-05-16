@@ -170,3 +170,9 @@
   color: #a0aec0;
   font-size: .78rem;
 }
+.historial-obs {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary, #666);
+  margin: 2px 0 4px;
+  font-style: italic;
+}
