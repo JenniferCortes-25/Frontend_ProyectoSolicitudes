@@ -18,6 +18,7 @@ export class AuthService {
   isAdmin      = computed(() => this.roles().includes('ADMIN'));
   isCoordinador= computed(() => this.roles().includes('COORDINADOR'));
   isEstudiante = computed(() => this.roles().includes('ESTUDIANTE'));
+  isDocente    = computed(() => this.roles().includes('DOCENTE'));
 
   constructor(private http: HttpClient) {}
 

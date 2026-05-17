@@ -1,33 +1,63 @@
-<section class="hero">
-  <div class="hero-icono">🎓</div>
-  <h1>{{ bienvenida() }}</h1>
-  <p class="subtitulo">{{ subtitulo() }}</p>
+<!-- inicio.ts: añade auth = inject(AuthService) -->
 
-  <div class="acciones">
+<div class="container mt-4">
+  <h2 class="mb-4">Bienvenido al Sistema</h2>
+
+  <!-- Tarjetas de acceso rápido según rol -->
+  <div class="row g-3">
+
+    <!-- Todos los autenticados ven esto -->
     @if (auth.estaAutenticado()) {
-      <a routerLink="/solicitudes" class="btn btn-primario">Ver Solicitudes</a>
-      <a routerLink="/solicitudes/nueva" class="btn btn-secundario">Nueva Solicitud</a>
-    } @else {
-      <a routerLink="/login" class="btn btn-primario">Iniciar Sesión</a>
-      <a routerLink="/registro" class="btn btn-secundario">Registrarse</a>
+      <div class="col-md-4">
+        <div class="card text-center p-3 h-100">
+          <i class="fa-solid fa-list fa-2x text-primary mb-2"></i>
+          <h5>Mis Solicitudes</h5>
+          <a routerLink="/solicitudes" class="btn btn-outline-primary btn-sm mt-2">
+            Ver
+          </a>
+        </div>
+      </div>
     }
-  </div>
-</section>
 
-<section class="tarjetas-info">
-  <div class="tarjeta">
-    <span class="icono">📋</span>
-    <h3>Registra tu Solicitud</h3>
-    <p>Crea solicitudes de homologación, becas, certificados y más en minutos.</p>
+    <!-- Solo ADMIN o COORDINADOR -->
+    @if (auth.isAdmin() || auth.isCoordinador()) {
+      <div class="col-md-4">
+        <div class="card text-center p-3 h-100 border-warning">
+          <i class="fa-solid fa-chart-bar fa-2x text-warning mb-2"></i>
+          <h5>Reportes</h5>
+          <a routerLink="/reportes" class="btn btn-outline-warning btn-sm mt-2">
+            Ver Reportes
+          </a>
+        </div>
+      </div>
+    }
+
+    <!-- Solo ADMIN -->
+    @if (auth.isAdmin()) {
+      <div class="col-md-4">
+        <div class="card text-center p-3 h-100 border-danger">
+          <i class="fa-solid fa-users fa-2x text-danger mb-2"></i>
+          <h5>Gestión de Usuarios</h5>
+          <a routerLink="/usuarios" class="btn btn-outline-danger btn-sm mt-2">
+            Administrar
+          </a>
+        </div>
+      </div>
+    }
+
+    <!-- Solo DOCENTE -->
+    @if (auth.isDocente()) {
+      <div class="col-md-4">
+        <div class="card text-center p-3 h-100" style="border-color:#F59E0B">
+          <i class="fa-solid fa-chalkboard-user fa-2x mb-2" style="color:#D97706"></i>
+          <h5>Solicitudes Asignadas</h5>
+          <p class="small text-muted mb-2">Solicitudes pendientes de atención</p>
+          <a routerLink="/solicitudes-asignadas" class="btn btn-sm mt-2" style="border-color:#F59E0B;color:#92400E">
+            Atender
+          </a>
+        </div>
+      </div>
+    }
+
   </div>
-  <div class="tarjeta">
-    <span class="icono">🔍</span>
-    <h3>Consulta el Estado</h3>
-    <p>Sigue en tiempo real el avance de tus solicitudes.</p>
-  </div>
-  <div class="tarjeta">
-    <span class="icono">✅</span>
-    <h3>Gestión Eficiente</h3>
-    <p>Coordinadores y administrativos gestionan todo desde un solo lugar.</p>
-  </div>
-</section>
+</div>

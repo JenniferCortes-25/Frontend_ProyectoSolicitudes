@@ -1,4 +1,5 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── Reset base ───────────────────────────────────────── */
+* { box-sizing: border-box; }
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -7,5 +8,42 @@ body {
   min-height: 100vh;
 }
 
-a { color: inherit; }
-button { font-family: inherit; }
+/* ── Layout principal ─────────────────────────────────── */
+.contenido-principal {
+  min-height: calc(100vh - 130px); /* espacio para footer */
+  padding-bottom: 2rem;
+}
+
+/* ── Validación visual Angular + Bootstrap ────────────── */
+/* Angular añade estas clases automáticamente a los FormControl */
+.ng-invalid.ng-touched:not(form) {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.ng-valid.ng-touched:not(form) {
+  border-color: #198754 !important;
+  box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25) !important;
+}
+
+/* ── Personalización Bootstrap opcional ───────────────── */
+/* Ajusta el color primario si quieres otro diferente al azul Bootstrap */
+.btn-primary {
+  background-color: #185fa5;
+  border-color: #185fa5;
+}
+.btn-primary:hover {
+  background-color: #0c447c;
+  border-color: #0c447c;
+}
+.navbar.bg-primary {
+  background-color: #185fa5 !important;
+}
+
+/* ── Utilidades propias ───────────────────────────────── */
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

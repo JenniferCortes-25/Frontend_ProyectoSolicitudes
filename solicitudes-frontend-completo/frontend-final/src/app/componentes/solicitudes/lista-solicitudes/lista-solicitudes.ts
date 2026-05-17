@@ -1,4 +1,5 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { SlicePipe } from '@angular/common';
 import { SolicitudService } from '../../../servicios/solicitud.service';
@@ -10,40 +11,49 @@ import { SolicitudResumenResponse, EstadoSolicitud } from '../../../dto/solicitu
   templateUrl: './lista-solicitudes.html',
   styleUrl: './lista-solicitudes.css',
 })
-export class ListaSolicitudes implements OnInit {
+export class ListaSolicitudes {
   private svc = inject(SolicitudService);
 
-  solicitudes = signal<SolicitudResumenResponse[]>([]);
-  cargando    = signal(true);
-  error       = signal('');
-  filtroEstado = signal<EstadoSolicitud | ''>('');
+  // ✅ toSignal() — Angular gestiona suscripción y cancelación automáticamente
+  private todasLasSolicitudes = toSignal(
+    this.svc.listar(),
+    { initialValue: [] as SolicitudResumenResponse[] }
+  );
 
+  filtroEstado = signal<EstadoSolicitud | ''>('');
   readonly estados: EstadoSolicitud[] = [
     'REGISTRADA', 'CLASIFICADA', 'EN_ATENCION', 'ATENDIDA', 'CERRADA'
   ];
 
-  ngOnInit(): void { this.cargar(); }
-
-  cargar(): void {
-    this.cargando.set(true);
-    this.error.set('');
-    const estado = this.filtroEstado() || undefined;
-    this.svc.listar(estado as EstadoSolicitud).subscribe({
-      next: data => { this.solicitudes.set(data); this.cargando.set(false); },
-      error: ()  => { this.error.set('No se pudo cargar la lista. ¿Está el backend corriendo?'); this.cargando.set(false); },
-    });
-  }
+  // Computed: filtra en el cliente sin nueva petición HTTP
+  solicitudes = computed(() => {
+    const filtro = this.filtroEstado();
+    const todas  = this.todasLasSolicitudes();
+    return filtro ? todas.filter(s => s.estado === filtro) : todas;
+  });
 
   cambiarFiltro(valor: string): void {
     this.filtroEstado.set(valor as EstadoSolicitud | '');
-    this.cargar();
   }
 
-  colorEstado(estado: string): string {
-    const colores: Record<string, string> = {
-      REGISTRADA: '#805ad5', CLASIFICADA: '#2b6cb0', EN_ATENCION: '#d69e2e',
-      ATENDIDA: '#38a169', CERRADA: '#718096',
+  badgeEstado(estado: string): string {
+    const mapa: Record<string, string> = {
+      REGISTRADA: 'bg-secondary',
+      CLASIFICADA: 'bg-info text-dark',
+      EN_ATENCION: 'bg-warning text-dark',
+      ATENDIDA: 'bg-success',
+      CERRADA: 'bg-dark',
     };
-    return colores[estado] ?? '#2d3748';
+    return mapa[estado] ?? 'bg-secondary';
+  }
+
+  badgePrioridad(prioridad: string): string {
+    const mapa: Record<string, string> = {
+      BAJA: 'bg-success',
+      MEDIA: 'bg-warning text-dark',
+      ALTA: 'bg-danger',
+      CRITICA: 'bg-danger',
+    };
+    return mapa[prioridad] ?? 'bg-secondary';
   }
 }

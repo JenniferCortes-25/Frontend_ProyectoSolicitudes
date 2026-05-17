@@ -17,6 +17,7 @@ export class Navbar {
   isLoggedIn   = this.auth.estaAutenticado;
   isAdmin      = this.auth.isAdmin;
   isCoordinador= this.auth.isCoordinador;
+  isDocente    = this.auth.isDocente;
   userEmail    = () => this.auth.getEmail() ?? 'Usuario';
 
   logout(): void {

@@ -4,6 +4,11 @@
   <router-outlet />
 </main>
 
-@defer (on viewport) {  
+<!-- @placeholder es OBLIGATORIO con "on viewport":            -->
+<!-- Angular lo usa como ancla para detectar cuando el área    -->
+<!-- entra al viewport y así cargar el componente real.        -->
+@defer (on viewport) {
   <app-footer />
+} @placeholder {
+  <div style="height: 80px"></div>
 }
