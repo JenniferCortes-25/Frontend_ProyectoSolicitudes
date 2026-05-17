@@ -1,17 +1,23 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../../servicios/auth.service';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
   standalone: true,
 })
 export class Navbar {
-  auth = inject(AuthService);
+  auth   = inject(AuthService);
   router = inject(Router);
+
+  // Acceso directo a los signals — el template los llama como funciones
+  isLoggedIn   = this.auth.estaAutenticado;
+  isAdmin      = this.auth.isAdmin;
+  isCoordinador= this.auth.isCoordinador;
+  userEmail    = () => this.auth.getEmail() ?? 'Usuario';
 
   logout(): void {
     this.auth.logout();

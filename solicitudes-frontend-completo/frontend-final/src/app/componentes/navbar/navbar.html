@@ -1,24 +1,90 @@
-<nav class="navbar">
-  <a routerLink="/" class="navbar-brand">
-    <span class="brand-icon">📋</span>
-    <span>Solicitudes UniQ</span>
-  </a>
+<nav class="navbar navbar-expand-md bg-primary navbar-dark shadow-sm">
+  <div class="container">
 
-  @if (auth.estaAutenticado()) {
-    <ul class="navbar-links">
-      <li><a routerLink="/">Inicio</a></li>
-      <li><a routerLink="/solicitudes">Solicitudes</a></li>
-      <li><a routerLink="/solicitudes/nueva">Nueva Solicitud</a></li>
-      <li><a routerLink="/usuarios">Usuarios</a></li>
-    </ul>
-    <div class="navbar-actions">
-      <a routerLink="/cambiar-password" class="btn-password">🔑 Mi contraseña</a>
-      <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+    <!-- Marca / logo -->
+    <a routerLink="/" class="navbar-brand d-flex align-items-center gap-2">
+      <i class="fa-solid fa-file-alt"></i>
+      <span>Solicitudes UniQ</span>
+    </a>
+
+    <!-- Botón hamburguesa: solo visible en móvil -->
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navMenu"
+            aria-controls="navMenu"
+            aria-expanded="false">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Contenido colapsable -->
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav me-auto">
+
+        <!-- Siempre visible -->
+        <li class="nav-item">
+          <a routerLink="/" routerLinkActive="active"
+             class="nav-link">
+            <i class="fa-solid fa-home me-1"></i>Inicio
+          </a>
+        </li>
+
+        <!-- Solo cuando hay sesión -->
+        @if (isLoggedIn()) {
+          <li class="nav-item">
+            <a routerLink="/solicitudes" routerLinkActive="active"
+               class="nav-link">
+              <i class="fa-solid fa-list me-1"></i>Solicitudes
+            </a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/solicitudes/nueva" routerLinkActive="active"
+               class="nav-link">
+              <i class="fa-solid fa-plus me-1"></i>Nueva Solicitud
+            </a>
+          </li>
+
+          <!-- Solo para ADMIN -->
+          @if (isAdmin()) {
+            <li class="nav-item">
+              <a routerLink="/usuarios" routerLinkActive="active"
+                 class="nav-link">
+                <i class="fa-solid fa-users me-1"></i>Usuarios
+              </a>
+            </li>
+          }
+
+          <!-- Solo para COORDINADOR o ADMIN -->
+          @if (isAdmin() || isCoordinador()) {
+            <li class="nav-item">
+              <a routerLink="/reportes" routerLinkActive="active"
+                 class="nav-link">
+                <i class="fa-solid fa-chart-bar me-1"></i>Reportes
+              </a>
+            </li>
+          }
+        }
+      </ul>
+
+      <!-- Zona derecha: sesión -->
+      <div class="d-flex align-items-center gap-2">
+        @if (isLoggedIn()) {
+          <span class="text-white-50 small d-none d-md-inline">
+            <i class="fa-solid fa-user me-1"></i>{{ userEmail() }}
+          </span>
+          <a routerLink="/cambiar-password"
+             class="btn btn-outline-light btn-sm">
+            <i class="fa-solid fa-key"></i>
+          </a>
+          <button class="btn btn-outline-light btn-sm"
+                  (click)="logout()">
+            <i class="fa-solid fa-right-from-bracket me-1"></i>Salir
+          </button>
+        } @else {
+          <a routerLink="/login" class="btn btn-outline-light btn-sm">
+            <i class="fa-solid fa-right-to-bracket me-1"></i>Iniciar sesión
+          </a>
+        }
+      </div>
     </div>
-  } @else {
-    <ul class="navbar-links">
-      <li><a routerLink="/">Inicio</a></li>
-    </ul>
-    <a routerLink="/login" class="btn-login">Iniciar sesión</a>
-  }
+  </div>
 </nav>

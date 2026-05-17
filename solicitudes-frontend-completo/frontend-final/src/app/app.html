@@ -4,6 +4,6 @@
   <router-outlet />
 </main>
 
-<footer class="pie-pagina">
-  <p>{{ footer() }}</p>
-</footer>
+@defer (on viewport) {  
+  <app-footer />
+}
