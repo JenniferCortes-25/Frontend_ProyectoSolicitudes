@@ -3,10 +3,10 @@
   <!-- Encabezado -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">
-      <i class="fa-solid fa-list-check me-2 text-primary"></i>Mis Solicitudes
+      <i class="pi pi-list-check me-2 text-primary"></i>Mis Solicitudes
     </h1>
     <a routerLink="/solicitudes/nueva" class="btn btn-primary">
-      <i class="fa-solid fa-plus me-1"></i>Nueva Solicitud
+      <i class="pi pi-plus me-1"></i>Nueva Solicitud
     </a>
   </div>
 
@@ -26,48 +26,48 @@
   <!-- Estado vacío -->
   @if (solicitudes().length === 0) {
     <div class="text-center py-5 text-muted">
-      <i class="fa-solid fa-inbox fa-3x mb-3 d-block"></i>
-      <p class="h5">No hay solicitudes registradas aún.</p>
+      <i class="pi pi-inbox" style="font-size: 3rem"></i>
+      <p class="h5 mt-3">No hay solicitudes registradas aún.</p>
       <a routerLink="/solicitudes/nueva" class="btn btn-outline-primary mt-2">
         Crear mi primera solicitud
       </a>
     </div>
   } @else {
-    <!-- Grid de cards: 1 col móvil, 2 tablet, 3 desktop -->
     <div class="row g-3">
       @for (s of solicitudes(); track s.id) {
         <div class="col-md-6 col-lg-4">
-          <div class="card h-100 solicitud-card"
-               [class.prioridad-alta]="s.nivelPrioridad === 'ALTA' || s.nivelPrioridad === 'CRITICA'">
+          <p-card styleClass="h-100 solicitud-card"
+                  [style]="(s.nivelPrioridad === 'ALTA' || s.nivelPrioridad === 'CRITICA') ? {'border-left': '4px solid #dc3545'} : {}">
 
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <!-- Header manual dentro del body del card -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
               <span class="fw-semibold small text-truncate" style="max-width:65%">
                 {{ s.descripcionBreve }}
               </span>
-              <span class="badge {{ badgeEstado(s.estado) }}">{{ s.estado }}</span>
+              <p-tag [value]="s.estado" [severity]="tagSeveridad(s.estado)" />
             </div>
 
-            <div class="card-body">
-              <p class="text-muted small mb-2">
-                <i class="fa-solid fa-tag me-1"></i>{{ s.tipo ?? '—' }}
-              </p>
-              <p class="text-muted small mb-0">
-                <i class="fa-regular fa-calendar me-1"></i>
-                {{ s.fechaRegistro | slice:0:10 }}
-              </p>
-            </div>
+            <!-- Contenido -->
+            <p class="text-muted small mb-2">
+              <i class="pi pi-tag me-1"></i>{{ s.tipo ?? '—' }}
+            </p>
+            <p class="text-muted small mb-3">
+              <i class="pi pi-calendar me-1"></i>
+              {{ s.fechaRegistro | slice:0:10 }}
+            </p>
 
-            <div class="card-footer d-flex justify-content-between align-items-center">
-              <span class="badge {{ badgePrioridad(s.nivelPrioridad ?? '') }}">
-                {{ s.nivelPrioridad ?? 'Sin prioridad' }}
-              </span>
+            <!-- Footer manual -->
+            <div class="d-flex justify-content-between align-items-center">
+              <p-tag [value]="s.nivelPrioridad ?? 'Sin prioridad'"
+                     [severity]="tagPrioridad(s.nivelPrioridad ?? '')"
+                     icon="pi pi-arrow-up" />
               <a [routerLink]="['/solicitudes', s.id]"
                  class="btn btn-sm btn-outline-primary">
-                <i class="fa-solid fa-eye me-1"></i>Ver
+                <i class="pi pi-eye me-1"></i>Ver
               </a>
             </div>
 
-          </div>
+          </p-card>
         </div>
       }
     </div>

@@ -1,73 +1,55 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-5 col-lg-4">
-      <div class="card shadow-sm">
-
-        <div class="card-header text-center py-3 bg-primary text-white">
-          <i class="fa-solid fa-right-to-bracket fa-lg me-2"></i>
-          <span class="fw-semibold">Iniciar Sesión</span>
-        </div>
-
-        <div class="card-body p-4">
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-
-            <div class="mb-3">
-              <label class="form-label">Correo electrónico</label>
-              <input type="email" formControlName="username"
-                     class="form-control"
-                     placeholder="correo@ejemplo.com"
-                     autocomplete="username" />
-              @if (loginForm.get('username')?.invalid
-                   && loginForm.get('username')?.touched) {
-                <div class="text-danger small mt-1">
-                  Ingresa un correo electrónico válido.
-                </div>
-              }
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Contraseña</label>
-              <input type="password" formControlName="password"
-                     class="form-control"
-                     placeholder="••••••••"
-                     autocomplete="current-password" />
-              @if (loginForm.get('password')?.invalid
-                   && loginForm.get('password')?.touched) {
-                <div class="text-danger small mt-1">
-                  La contraseña debe tener mínimo 6 caracteres.
-                </div>
-              }
-            </div>
-
-            <div class="d-grid">
-              <button type="submit" class="btn btn-primary"
-                      [disabled]="!canSubmit()">
-                @if (isLoading()) {
-                  <span class="spinner-border spinner-border-sm me-2"></span>
-                  Ingresando…
-                } @else {
-                  <i class="fa-solid fa-right-to-bracket me-2"></i>Ingresar
-                }
-              </button>
-            </div>
-
-            @if (result()) {
-              <div class="alert mt-3"
-                   [class.alert-success]="result().includes('correctamente')"
-                   [class.alert-danger]="!result().includes('correctamente')">
-                {{ result() }}
-              </div>
-            }
-
-          </form>
-        </div>
-
-        <div class="card-footer text-center text-muted small py-3">
-          ¿No tienes cuenta?
-          <a routerLink="/registro" class="text-primary">Regístrate</a>
-        </div>
-
-      </div>
+<div class="login-wrapper">
+  <p-card class="login-card">
+    <div class="login-header">
+      <i class="pi pi-lock text-primary" style="font-size: 2rem"></i>
+      <h2 class="mt-2">Iniciar Sesión</h2>
+      <p class="text-secondary">Sistema de Solicitudes UQ</p>
     </div>
-  </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <p-fluid>
+        <div class="flex flex-col gap-4">
+
+          <div class="mb-3">
+            <p-iftalabel>
+              <input pInputText id="username" type="email" formControlName="username" autocomplete="username" />
+              <label for="username">Correo electrónico</label>
+            </p-iftalabel>
+            @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+              <small class="p-error block mt-1" style="color: var(--p-red-500);">
+                Ingresa un correo electrónico válido.
+              </small>
+            }
+          </div>
+
+          <div class="mb-3">
+            <p-iftalabel>
+              <p-password id="password" formControlName="password" [feedback]="false" [toggleMask]="true" />
+              <label for="password">Contraseña</label>
+            </p-iftalabel>
+            @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+              <small class="p-error block mt-1" style="color: var(--p-red-500);">
+                La contraseña debe tener al menos 6 caracteres.
+              </small>
+            }
+          </div>
+
+          @if (result()) {
+            <div class="mb-3">
+              <p-message severity="error" [text]="result()" />
+            </div>
+          }
+
+          <p-button
+            type="submit"
+            label="Ingresar"
+            severity="primary"
+            [disabled]="!canSubmit()"
+            [loading]="isLoading()"
+          />
+
+        </div>
+      </p-fluid>
+    </form>
+  </p-card>
 </div>
