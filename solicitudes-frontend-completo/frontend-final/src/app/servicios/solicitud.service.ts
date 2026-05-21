@@ -35,7 +35,7 @@ export class SolicitudService {
     const params = new HttpParams()
       .set('page', page)
       .set('size', size);
-    return this.http.get<PageResponse<SolicitudResumenResponse>>(this.API, { params });
+    return this.http.get<PageResponse<SolicitudResumenResponse>>(`${this.API}/paginado`, { params });
   }
 
   obtenerPorId(id: string): Observable<SolicitudDetalleResponse> {

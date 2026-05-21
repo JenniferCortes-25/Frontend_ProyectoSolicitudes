@@ -1,8 +1,8 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { SlicePipe } from '@angular/common';
-import { switchMap, catchError, of } from 'rxjs';
+import { switchMap, catchError, of, tap } from 'rxjs';
 import { TableModule } from 'primeng/table';
 import { Paginator, PaginatorState } from 'primeng/paginator';
 import { ProgressSpinner } from 'primeng/progressspinner';
@@ -22,17 +22,25 @@ const EMPTY_PAGE: PageResponse<SolicitudResumenResponse> = {
   templateUrl: './lista-solicitudes.html',
   styleUrl: './lista-solicitudes.css',
 })
-export class ListaSolicitudes {
+export class ListaSolicitudes implements OnInit {
   private svc                 = inject(SolicitudService);
   private notificationService = inject(NotificationService);
 
-  page = signal(0);
-  size = signal(5);
+  page    = signal(0);
+  size    = signal(5);
+  refresh = signal(0);        // <-- se incrementa cada vez que se entra a la pantalla
+  loading = signal(true);
 
-  private params = computed(() => ({ page: this.page(), size: this.size() }));
+  // params incluye refresh, así el observable se dispara al entrar y al paginar
+  private params = computed(() => ({
+    page: this.page(),
+    size: this.size(),
+    refresh: this.refresh(),
+  }));
 
   paginatedData = toSignal(
     toObservable(this.params).pipe(
+      tap(() => this.loading.set(true)),
       switchMap(p =>
         this.svc.listarPaginado(p.page, p.size).pipe(
           catchError(() => {
@@ -40,14 +48,26 @@ export class ListaSolicitudes {
             return of(EMPTY_PAGE);
           })
         )
-      )
+      ),
+      tap(() => this.loading.set(false))
     ),
-    { initialValue: EMPTY_PAGE }
+    { initialValue: undefined }
   );
 
-  solicitudes   = computed(() => this.paginatedData().content);
-  totalElements = computed(() => this.paginatedData().totalElements);
-  cargando      = computed(() => this.solicitudes().length === 0 && this.totalElements() === 0);
+  private safePage = computed(() => {
+    const data = this.paginatedData();
+    if (!data || !Array.isArray(data.content)) return EMPTY_PAGE;
+    return data;
+  });
+
+  solicitudes   = computed(() => this.safePage().content);
+  totalElements = computed(() => this.safePage().totalElements);
+  cargando      = computed(() => this.loading());
+
+  // Cada vez que Angular activa esta vista, forzamos un nuevo fetch
+  ngOnInit(): void {
+    this.refresh.update(v => v + 1);
+  }
 
   onPageChange(event: PaginatorState): void {
     this.page.set(event.page ?? 0);
