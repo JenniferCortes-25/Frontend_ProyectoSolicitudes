@@ -3,14 +3,14 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-// PrimeNG v21 - Componentes directos
-import { InputText } from 'primeng/inputtext';
-import { Password } from 'primeng/password';
-import { Button } from 'primeng/button';
-import { Message } from 'primeng/message';
-import { IftaLabel } from 'primeng/iftalabel';
-import { Fluid } from 'primeng/fluid';
-import { Card } from 'primeng/card';
+// PrimeNG v21
+import { InputText }  from 'primeng/inputtext';
+import { Password }   from 'primeng/password';
+import { Button }     from 'primeng/button';
+import { Message }    from 'primeng/message';
+import { IftaLabel }  from 'primeng/iftalabel';
+import { Fluid }      from 'primeng/fluid';
+import { Card }       from 'primeng/card';
 
 import { AuthService } from '../../servicios/auth.service';
 
@@ -23,8 +23,8 @@ import { AuthService } from '../../servicios/auth.service';
 })
 export class Login {
   private authService = inject(AuthService);
-  private router = inject(Router);
-  private destroyRef = inject(DestroyRef);
+  private router      = inject(Router);
+  private destroyRef  = inject(DestroyRef);
 
   loginForm = inject(FormBuilder).group({
     username: ['', [Validators.required, Validators.email]],
@@ -32,10 +32,9 @@ export class Login {
   });
 
   isLoading = signal(false);
-  result = signal('');
+  result    = signal('');
 
   private formStatus = toSignal(this.loginForm.statusChanges, { initialValue: 'INVALID' as const });
-
   canSubmit = computed(() => this.formStatus() === 'VALID' && !this.isLoading());
 
   onSubmit(): void {
@@ -52,15 +51,14 @@ export class Login {
       .subscribe({
         next: () => {
           this.isLoading.set(false);
-          this.authService.estaAutenticado.set(true);
-          this.router.navigate(['/lista-solicitudes']);
+          this.router.navigate(['/solicitudes']);
         },
         error: (err: unknown) => {
           this.isLoading.set(false);
           if (err && typeof err === 'object' && 'message' in err) {
             this.result.set((err as { message: string }).message || 'Error al iniciar sesión');
           } else {
-            this.result.set('Error inesperado al iniciar sesión');
+            this.result.set('Credenciales incorrectas o error de conexión');
           }
         },
       });
