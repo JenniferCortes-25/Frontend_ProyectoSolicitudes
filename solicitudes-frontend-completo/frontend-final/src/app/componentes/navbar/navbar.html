@@ -52,17 +52,7 @@
               </a>
             </li>
           }
-
-          <!-- Solo para COORDINADOR o ADMIN -->
-          @if (isAdmin() || isCoordinador()) {
-            <li class="nav-item">
-              <a routerLink="/reportes" routerLinkActive="active"
-                 class="nav-link">
-                <i class="fa-solid fa-chart-bar me-1"></i>Reportes
-              </a>
-            </li>
-          }
-
+          
           <!-- Solo para DOCENTE -->
           @if (isDocente()) {
             <li class="nav-item">
