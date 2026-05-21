@@ -39,6 +39,21 @@
         }
       </div>
 
+      <!-- 🤖 Sugerencia IA (RF-10) — aparece debajo de la descripción -->
+      <app-sugerencia-ia
+        [descripcion]="solicitudForm.get('descripcion')?.value ?? ''"
+        (aceptarSugerencia)="usarSugerencia($event)">
+      </app-sugerencia-ia>
+
+      <!-- Muestra la sugerencia aceptada si el usuario la confirmó -->
+      @if (sugerenciaIa()) {
+        <div class="ia-aceptada">
+          ✅ Sugerencia IA guardada: <strong>{{ sugerenciaIa()!.tipoSugerido }}</strong>
+          — <strong>{{ sugerenciaIa()!.prioridadSugerida }}</strong>
+          (el coordinador podrá confirmarla al clasificar)
+        </div>
+      }
+
       <!-- Canal de origen -->
       <div class="campo">
         <label>Canal de origen *</label>

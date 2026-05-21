@@ -60,6 +60,10 @@
         <p>{{ s.totalEntradaHistorial }}</p>
       </div>
     </div>
+
+    <!-- 🤖 Resumen IA (RF-09) — aparece dentro de la tarjeta de detalle -->
+    <app-resumen-ia [solicitudId]="s.id"></app-resumen-ia>
+
   </div>
 
   <!-- ── 1. CLASIFICAR (estado: REGISTRADA) ─────────────────────────── -->
@@ -241,26 +245,26 @@
   }
 
   <!-- ── HISTORIAL ──────────────────────────────────────────────────── -->
-@if (historial().length > 0) {
-  <div class="historial-card">
-    <h3>🕓 Historial de eventos</h3>
-    <ul class="historial-lista">
-      @for (h of historial(); track $index) {
-        <li class="historial-item">
-          <span class="historial-punto">●</span>
-          <div>
-            <p class="historial-desc">
-              <strong>{{ h.accion }}</strong>
-              @if (h.usuarioResponsable) { — {{ h.usuarioResponsable }} }
-            </p>
-            @if (h.observaciones) {
-              <p class="historial-obs">{{ h.observaciones }}</p>
-            }
-            <span class="historial-fecha">{{ h.fechaHora | slice:0:16 }}</span>
-          </div>
-        </li>
-      }
-    </ul>
-  </div>
-}
+  @if (historial().length > 0) {
+    <div class="historial-card">
+      <h3>🕓 Historial de eventos</h3>
+      <ul class="historial-lista">
+        @for (h of historial(); track $index) {
+          <li class="historial-item">
+            <span class="historial-punto">●</span>
+            <div>
+              <p class="historial-desc">
+                <strong>{{ h.accion }}</strong>
+                @if (h.usuarioResponsable) { — {{ h.usuarioResponsable }} }
+              </p>
+              @if (h.observaciones) {
+                <p class="historial-obs">{{ h.observaciones }}</p>
+              }
+              <span class="historial-fecha">{{ h.fechaHora | slice:0:16 }}</span>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+  }
 }

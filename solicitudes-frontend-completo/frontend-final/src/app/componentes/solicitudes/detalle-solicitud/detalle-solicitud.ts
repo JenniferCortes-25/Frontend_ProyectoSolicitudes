@@ -8,10 +8,11 @@ import {
   TipoSolicitud,
   NivelPrioridad,
 } from '../../../dto/solicitud.dto';
+import { ResumenIaComponent } from '../resumen-ia/resumen-ia.component';
 
 @Component({
   selector: 'app-detalle-solicitud',
-  imports: [RouterLink, SlicePipe],
+  imports: [RouterLink, SlicePipe, ResumenIaComponent],
   templateUrl: './detalle-solicitud.html',
   styleUrl: './detalle-solicitud.css',
 })
@@ -32,24 +33,24 @@ export class DetalleSolicitud implements OnInit {
   ];
   readonly niveles: NivelPrioridad[] = ['CRITICA', 'ALTA', 'MEDIA', 'BAJA'];
 
-  // Clasificar — usa identificacion del coordinador (ej: C-001)
+  // Clasificar
   fTipo          = signal<TipoSolicitud>('HOMOLOGACION');
   fNivel         = signal<NivelPrioridad>('MEDIA');
   fJustificacion = signal('');
-  fCoordinadorId = signal('');   // identificacion, no UUID
+  fCoordinadorId = signal('');
 
-  // Asignar responsable — identificaciones
-  fResponsableId  = signal('');  // identificacion del responsable
-  fCoordAsignarId = signal('');  // identificacion del coordinador
+  // Asignar responsable
+  fResponsableId  = signal('');
+  fCoordAsignarId = signal('');
 
-  // Iniciar atención — identificacion del coordinador
+  // Iniciar atención
   fCoordIniciarId = signal('');
 
-  // Atender — identificacion del responsable
+  // Atender
   fObservacionAtender    = signal('');
-  fResponsableAtenderId  = signal('');  // identificacion del responsable
+  fResponsableAtenderId  = signal('');
 
-  // Cerrar — identificacion del coordinador
+  // Cerrar
   fObservacionCerrar = signal('');
   fCoordCerrarId     = signal('');
 
@@ -90,7 +91,7 @@ export class DetalleSolicitud implements OnInit {
       tipo:                   this.fTipo(),
       nivelPrioridad:         this.fNivel(),
       justificacionPrioridad: this.fJustificacion(),
-      coordinadorId:          this.fCoordinadorId(),   // se manda la identificacion
+      coordinadorId:          this.fCoordinadorId(),
     }).subscribe({
       next: () => { this.mensaje.set('✅ Solicitud clasificada correctamente.'); this.accionando.set(false); this.recargar(); },
       error: err => { this.error.set(err?.error?.message ?? 'Error al clasificar. Verifica la identificación del coordinador.'); this.accionando.set(false); },
@@ -105,8 +106,8 @@ export class DetalleSolicitud implements OnInit {
     this.accionando.set(true);
     this.error.set('');
     this.svc.asignarResponsable(this.solicitud()!.id, {
-      responsableId: this.fResponsableId(),   // identificacion
-      coordinadorId: this.fCoordAsignarId(),  // identificacion
+      responsableId: this.fResponsableId(),
+      coordinadorId: this.fCoordAsignarId(),
     }).subscribe({
       next: () => { this.mensaje.set('✅ Responsable asignado correctamente.'); this.accionando.set(false); this.recargar(); },
       error: err => { this.error.set(err?.error?.message ?? 'Error al asignar responsable. Verifica las identificaciones.'); this.accionando.set(false); },
@@ -121,7 +122,7 @@ export class DetalleSolicitud implements OnInit {
     this.accionando.set(true);
     this.error.set('');
     this.svc.iniciarAtencion(this.solicitud()!.id, {
-      coordinadorId: this.fCoordIniciarId(),  // identificacion
+      coordinadorId: this.fCoordIniciarId(),
     }).subscribe({
       next: () => { this.mensaje.set('✅ Atención iniciada correctamente.'); this.accionando.set(false); this.recargar(); },
       error: err => { this.error.set(err?.error?.message ?? 'Error al iniciar atención.'); this.accionando.set(false); },
@@ -137,7 +138,7 @@ export class DetalleSolicitud implements OnInit {
     this.error.set('');
     this.svc.atender(this.solicitud()!.id, {
       observacion:   this.fObservacionAtender(),
-      responsableId: this.fResponsableAtenderId(),  // identificacion
+      responsableId: this.fResponsableAtenderId(),
     }).subscribe({
       next: () => { this.mensaje.set('✅ Solicitud marcada como atendida.'); this.accionando.set(false); this.recargar(); },
       error: err => { this.error.set(err?.error?.message ?? 'Error al atender. Verifica que seas el responsable asignado.'); this.accionando.set(false); },
@@ -153,7 +154,7 @@ export class DetalleSolicitud implements OnInit {
     this.error.set('');
     this.svc.cerrar(this.solicitud()!.id, {
       observacion:   this.fObservacionCerrar(),
-      coordinadorId: this.fCoordCerrarId(),  // identificacion
+      coordinadorId: this.fCoordCerrarId(),
     }).subscribe({
       next: () => { this.mensaje.set('✅ Solicitud cerrada correctamente.'); this.accionando.set(false); this.recargar(); },
       error: err => { this.error.set(err?.error?.message ?? 'Error al cerrar. Verifica la identificación del coordinador.'); this.accionando.set(false); },

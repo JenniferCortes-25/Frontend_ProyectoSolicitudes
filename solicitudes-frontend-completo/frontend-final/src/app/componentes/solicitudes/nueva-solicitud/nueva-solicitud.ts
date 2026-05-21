@@ -4,10 +4,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { SolicitudService } from '../../../servicios/solicitud.service';
 import { CanalOrigen } from '../../../dto/solicitud.dto';
+import { SugerenciaIaComponent } from '../sugerencia-ia/sugerencia-ia.component';
+import { SugerenciaIaResponse } from '../../../servicios/asistente-ia.service';
 
 @Component({
   selector: 'app-nueva-solicitud',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, SugerenciaIaComponent],
   templateUrl: './nueva-solicitud.html',
   styleUrl: './nueva-solicitud.css',
 })
@@ -20,6 +22,9 @@ export class NuevaSolicitud {
   isLoading = signal(false);
   result    = signal('');
 
+  // ── Sugerencia IA (RF-10) — se guarda para mostrar al usuario
+  sugerenciaIa = signal<SugerenciaIaResponse | null>(null);
+
   // ── Opciones del enum CanalOrigen del backend
   readonly canales: CanalOrigen[] = [
     'PRESENCIAL',
@@ -29,7 +34,7 @@ export class NuevaSolicitud {
     'CSU',
   ];
 
-  // ── Modelo del formulario (sin constructor)
+  // ── Modelo del formulario
   solicitudForm = inject(FormBuilder).group({
     descripcion:   ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000)]],
     canalOrigen:   ['' as CanalOrigen, Validators.required],
@@ -50,6 +55,11 @@ export class NuevaSolicitud {
   charCount = computed(() =>
     this.solicitudForm.get('descripcion')?.value?.length ?? 0
   );
+
+  // ── RF-10: Guarda la sugerencia cuando el usuario la acepta
+  usarSugerencia(sugerencia: SugerenciaIaResponse): void {
+    this.sugerenciaIa.set(sugerencia);
+  }
 
   onSubmit(): void {
     if (!this.canSubmit()) return;
