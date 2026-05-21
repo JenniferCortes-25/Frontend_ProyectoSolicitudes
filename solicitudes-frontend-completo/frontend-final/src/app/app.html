@@ -1,12 +1,12 @@
+<!-- p-toast debe estar en el root para ser visible globalmente -->
+<p-toast position="top-right"></p-toast>
+
 <app-navbar />
 
 <main class="contenido-principal">
   <router-outlet />
 </main>
 
-<!-- @placeholder es OBLIGATORIO con "on viewport":            -->
-<!-- Angular lo usa como ancla para detectar cuando el área    -->
-<!-- entra al viewport y así cargar el componente real.        -->
 @defer (on viewport) {
   <app-footer />
 } @placeholder {

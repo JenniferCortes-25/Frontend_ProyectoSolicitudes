@@ -13,6 +13,7 @@ import {
   EstadoSolicitud,
   EventoHistorialResponse,
 } from '../dto/solicitud.dto';
+import { PageResponse } from '../dto/page-response';
 
 @Injectable({ providedIn: 'root' })
 export class SolicitudService {
@@ -22,10 +23,19 @@ export class SolicitudService {
 
   // ── Consultas ────────────────────────────────────────────────────────────
 
+  /** Carga todas las solicitudes sin paginación (usado en detalle, historial, etc.) */
   listar(estado?: EstadoSolicitud): Observable<SolicitudResumenResponse[]> {
     let params = new HttpParams();
     if (estado) params = params.set('estado', estado);
     return this.http.get<SolicitudResumenResponse[]>(this.API, { params });
+  }
+
+  /** Carga solicitudes paginadas — para p-table con paginación del servidor */
+  listarPaginado(page: number, size: number): Observable<PageResponse<SolicitudResumenResponse>> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+    return this.http.get<PageResponse<SolicitudResumenResponse>>(this.API, { params });
   }
 
   obtenerPorId(id: string): Observable<SolicitudDetalleResponse> {

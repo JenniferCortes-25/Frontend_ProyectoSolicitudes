@@ -3,6 +3,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { SolicitudService } from '../../../servicios/solicitud.service';
+import { NotificationService } from '../../../servicios/notification.service';
 import { CanalOrigen } from '../../../dto/solicitud.dto';
 import { SugerenciaIaComponent } from '../sugerencia-ia/sugerencia-ia.component';
 import { SugerenciaIaResponse } from '../../../servicios/asistente-ia.service';
@@ -14,9 +15,10 @@ import { SugerenciaIaResponse } from '../../../servicios/asistente-ia.service';
   styleUrl: './nueva-solicitud.css',
 })
 export class NuevaSolicitud {
-  private svc        = inject(SolicitudService);
-  private router     = inject(Router);
-  private destroyRef = inject(DestroyRef);
+  private svc                 = inject(SolicitudService);
+  private router              = inject(Router);
+  private destroyRef          = inject(DestroyRef);
+  private notificationService = inject(NotificationService);
 
   // ── Estado de UI
   isLoading = signal(false);
@@ -78,10 +80,13 @@ export class NuevaSolicitud {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (s) => {
+          this.notificationService.success('Guardado', 'La solicitud fue registrada correctamente.');
           this.router.navigate(['/solicitudes', s.id]);
         },
         error: (err) => {
-          this.result.set(err?.error?.message ?? 'Error al crear la solicitud.');
+          const msg = err?.error?.message ?? 'Error al crear la solicitud.';
+          this.notificationService.error('Error', msg);
+          this.result.set(msg);
           this.isLoading.set(false);
         },
       });
